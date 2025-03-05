@@ -1,0 +1,15 @@
+[package]
+name = "crypto-hashing"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tiny-keccak = "2.0"
+secp256k1 = "0.24"
+rust-crypto = "0.2.36"
+ethabi = "13.0"
+web3 = "0.15"
+sha3 = "0.10"
+hex = "0.4"
+ethers = { version = "2", features = ["rustls"] }
+
