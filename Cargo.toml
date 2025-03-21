@@ -2,17 +2,34 @@
 name = "crypto-cli"
 version = "0.1.0"
 edition = "2024"
+description = "A command-line tool for crypto operations"
+license = "MIT"
+repository = "https://github.com/yourusername/crypto-cli"
+readme = "README.md"
+keywords = ["crypto", "blockchain", "wallet", "cli"]
+categories = ["command-line-utilities", "cryptography"]
+
+# This tells Cargo this is a binary crate
+[[bin]]
+name = "crypto"  # This will be the command name
+path = "src/main.rs"
 
 [dependencies]
-tiny-keccak = "2.0"
-secp256k1 = "0.24"
-rust-crypto = "0.2.36"
-ethabi = "13.0"
-web3 = "0.15"
+# Hashing
+tiny-keccak = { version = "2.0", features = ["keccak"] }
 sha3 = "0.10"
+
+# Encoding/Decoding
 hex = "0.4"
-ethers = { version = "2", features = ["rustls"] }
+
+# Wallet functionality
 tiny-bip39 = "2.0.0"
-rand = "0.8"
-derivation-path = "0.2.0"
+bitcoin = { version = "0.29.2", features = ["rand"] }
+
+# CLI
 clap = "3.0.0-beta.2"
+
+
+# reqwest = {version = "0.11.0", default-features = false, features = ["charset", "http2", "macos-system-configuration", "rustls-tls"]}
+
+# look into divan

@@ -1,5 +1,10 @@
 use clap::{App, Arg};
-use crypto_cli::{Wallet, keccak256, keccak256_selector};
+use crypto_cli::{bip32, keccak256, keccak256_selector};
+use hex::encode;
+
+// use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator}; // look into this
+
+// look into derive
 
 fn main() {
     let matches = App::new("Crypto CLI")
@@ -18,7 +23,7 @@ fn main() {
             Arg::new("mnemonic")
                 .short('m')
                 .long("mnemonic")
-                .help("Generates a new mnemonic phrase"),
+                .help("Generates a new mnemonic phrase and keys"),
         )
         .arg(
             Arg::new("selector")
@@ -41,7 +46,23 @@ fn main() {
     }
 
     if matches.is_present("mnemonic") {
-        let mnemonic = Wallet::generate_mnemonic();
-        println!("Generated mnemonic: {}", mnemonic);
+        let wallet = bip32::HDWallet::new();
+        println!("Mnemonic: {}", wallet.mnemonic.phrase());
+
+        // Show master extended keys
+        println!("Master xprv: {}", wallet.get_extended_private_key("m"));
+        println!("Master xpub: {}", wallet.get_extended_public_key("m"));
+
+        // Derive Bitcoin key
+        let btc_key = wallet.derive_key(bip32::CoinType::Bitcoin);
+        println!("Bitcoin Private Key: {}", encode(btc_key));
+
+        // Derive Ethereum key
+        let eth_key = wallet.derive_key(bip32::CoinType::Ethereum);
+        println!("Ethereum Private Key: {}", encode(eth_key));
+
+        // Derive Solana key
+        let sol_key = wallet.derive_key(bip32::CoinType::Solana);
+        println!("Solana Private Key: {}", encode(sol_key));
     }
 }

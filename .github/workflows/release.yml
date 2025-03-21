@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            name: crypto-cli-linux-amd64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            name: crypto-cli-windows-amd64.exe
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            name: crypto-cli-macos-amd64
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.target }}
+      - name: Rename binary
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            cp target/${{ matrix.target }}/release/crypto.exe ${{ matrix.name }}
+          else
+            cp target/${{ matrix.target }}/release/crypto ${{ matrix.name }}
+          fi
+        shell: bash
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ matrix.name }}
+          asset_name: ${{ matrix.name }}
+          tag: ${{ github.ref }}
